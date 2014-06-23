@@ -15,25 +15,25 @@ that will change in the future.
 
 Types
 -----
- * nil
-    This type represents the absence of value. All unset values are equivalent
-    to nil, and all values set to nil are equivalent to unset values.
- * type
-    An integer type that enumerates all of the types of the language. Can be
-    equal to any of the types listed here.
- * int
-    Normal equivalent to C's `long` type. This is set in `tl/config.h`, if one
-    wishes to change that.
- * float
-    Normal equivalent to C's `double` type. This is set in `tl/config.h`, if one
-    wishes to change that.
- * string
-    A string type. The characters of the string are of C's `char` type.
- * list
-    A car-cdr style linked list.
- * function
-    A function.
- * table
-    A key-value pair based table. The table is stored as a binary tree. All types
-    can be stored as a key or value, though setting a key equal to nil it
-    equivalent to deleting it, and trying to access an unset key will return nil.
+* **nil**
+  This type represents the absence of value. All unset values are equivalent
+  to nil, and all values set to nil are equivalent to unset values.
+* **type**
+  An integer type that enumerates all of the types of the language. Can be
+  equal to any of the types listed here.
+* **int**
+  Normally equivalent to C's `long` type. This is set in `tl/config.h`, if one
+  wishes to change that.
+* **float**
+  Normally equivalent to C's `double` type. This is set in `tl/config.h`, if one
+  wishes to change that.
+* **string**
+  A string type. The characters of the string are of C's `char` type.
+* **list**
+   A car-cdr style linked list.
+* **function**
+   A function.
+* **table**
+   A key-value pair based table. The table is stored as a binary tree. All types
+   can be stored as a key or value, though setting a key equal to nil it
+   equivalent to deleting it, and trying to access an unset key will return nil.
