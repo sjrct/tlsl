@@ -3,61 +3,15 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <tl/io.h>
 #include <tl/tl.h>
 
 #define MAX_LINE 256
-/*
-static void dump(tl_var_t *);
 
-static void dump_str(tl_string_t * str)
-{
-	int i;
-	for (i = 0; i < str->len; i++)
-		putchar(str->str[i]);
-}
+static int parse_only = 0;
 
-static void dump_h(tl_var_t * v)
-{
-	switch (v->type) {
-	case TL_NIL:
-		printf("!nil!");
-		break;
-	case TL_TYPE:
-		printf("<%s>", tl_type_names[v->v.vtype]);
-		break;
-	case TL_INT:
-		printf("%ld", v->v.vint);
-		break;
-	case TL_FLOAT:
-		printf("%g", v->v.vfloat);
-		break;
-	case TL_STRING:
-		dump_str(&v->v.vstring);
-		break;
-	case TL_LIST:
-		dump(tl_car(v));
-		if (tl_cdr(v) != tl_nil) {
-			fputs(" ", stdout);
-			dump_h(tl_cdr(v));
-		}
-		break;
-	case TL_FUNCTION:
-		printf("[function]");
-		break;
-	default:
-		printf("????");
-	}
-}
-
-static void dump(tl_var_t * v)
-{
-	if (v->type == TL_LIST) fputs("(", stdout);
-	dump_h(v);
-	if (v->type == TL_LIST) fputs(")", stdout);
-}
-*/
 static void interactive(tl_var_t * env)
 {
 	char line[MAX_LINE];
@@ -69,21 +23,59 @@ static void interactive(tl_var_t * env)
 		fgets(line, MAX_LINE, stdin);
 
 		pls = tl_parse(line);
-		ret = tl_eval(pls, env);
+		ret = parse_only ? pls : tl_eval(pls, env);
 
 		tl_fprint(ret, stdout);
 		puts("");
 
-		tl_release(pls);
+		if (!parse_only) tl_release(pls);
 		tl_release(ret);
 	}
 }
 
+static void print_help(void)
+{
+	puts(
+		"\n"
+		"tli [options]\n"
+		"\n"
+		"Options:\n"
+		"    -h\n"
+		"        Print this helpful information.\n"
+		"    -p\n"
+		"        Enable parse only mode (typically for debugging purposes).\n"
+	);
+}
+
 int main(int argc, char ** argv)
 {
-	tl_init();
+	int i;
+	tl_var_t * env;
 
-	tl_var_t * env = tl_create_table();
+	tl_init();
+	env = tl_create_table();
+
+	for (i = 1; i < argc; i++) {
+		if (argv[i][0] == '-') {
+			switch (argv[i][1]) {
+			case 'h':
+				print_help();
+				return 0;
+			case 'p':
+				parse_only = 1;
+				break;
+			default:
+				fprintf(stderr, "Error: Unknown switch '%s'.\n", argv[i]);
+				fputs("Use 'tli -h' for help.\n", stderr);
+				return EXIT_FAILURE;
+			}
+		} else {
+			fprintf(stderr, "Error: Stray argument '%s'.\n", argv[i]);
+			fputs("Use 'tli -h' for help.\n", stderr);
+			return EXIT_FAILURE;
+		}
+	}
+
 	assert(tl_require("../tlbones/tlbones.so", env)); // FIXME
 
 	interactive(env);

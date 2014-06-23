@@ -23,5 +23,6 @@ struct tl_table {
 
 void tl_store(tl_table_t *, tl_var_t *, tl_var_t *);
 tl_var_t * tl_select(tl_table_t *, tl_var_t *);
+void tl_traverse(tl_table_t *, int (*)(tl_var_t *, tl_var_t *, void *), void *);
 
 #endif

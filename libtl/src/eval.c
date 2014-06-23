@@ -27,12 +27,10 @@ static tl_var_t * statement(tl_var_t * st, tl_var_t * env)
 		if (v->type == TL_FUNCTION) {
 			nxt = tl_cadr(st);
 
-			if (nxt->type == TL_LIST || (nxt == tl_nil && tl_car(st) != tl_nil)) {
-				nxt = statement(nxt, env);
-				v = tl_call(&v->v.vfunction, nxt, env);
-				tl_release(nxt);
-				st = tl_cdr(st);
-			}
+			nxt = statement(nxt, env);
+			v = tl_call(&v->v.vfunction, nxt, env);
+			tl_release(nxt);
+			st = tl_cdr(st);
 		} else {
 			v = statement(tl_car(st), env);
 		}

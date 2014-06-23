@@ -102,6 +102,13 @@ tl_var_t * tl_assign(tl_var_t * v)
 	return v;
 }
 
+static int release_entry(tl_var_t * k, tl_var_t * v, void * d)
+{
+	tl_release(k);
+	tl_release(v);
+	return 1;
+}
+
 void tl_release(tl_var_t * v)
 {
 	if (!--v->refs && ~v->flags & TL_STATIC) {
@@ -114,9 +121,15 @@ void tl_release(tl_var_t * v)
 			tl_release(tl_cdr(v));
 			break;
 		case TL_TABLE:
-			assert(0);
+			tl_traverse(&v->v.vtable, release_entry, NULL);
+			break;
 		case TL_FUNCTION:
-			assert(0);
+			if (v->v.vfunction.isuser) {
+				tl_release(v->v.vfunction.u.user.code);
+				tl_release(v->v.vfunction.u.user.argls);
+				tl_release(v->v.vfunction.u.user.env);
+			}
+			break;
 		}
 
 		free(v);

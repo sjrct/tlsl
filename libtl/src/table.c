@@ -71,3 +71,15 @@ tl_var_t * tl_select(tl_table_t * tbl, tl_var_t * k)
 	return (*p)->value;
 }
 
+static int traverse(tl_field_t * f, int (* foo)(tl_var_t *, tl_var_t *, void *), void * data)
+{
+	if (!foo(f->key, f->value, data)) return 0;
+	if (!traverse(f->left, foo, data)) return 0;
+	if (!traverse(f->right, foo, data)) return 0;
+	return 1;
+}
+
+void tl_traverse(tl_table_t * tbl, int (* foo)(tl_var_t *, tl_var_t *, void *), void * data)
+{
+	traverse(tbl->root, foo, data);
+}
